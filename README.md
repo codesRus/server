@@ -98,7 +98,8 @@ CREATE TABLE Users(
 	email VARCHAR(40) NOT NULL,
 	phone VARCHAR(12) NOT NULL,
 	id_token VARCHAR(80) UNIQUE, 
-	dev_token VARCHAR(80)
+	dev_token VARCHAR(80),
+	status VARCHAR(10) DEFAULT '', 
 ); 
 
 ```
@@ -116,18 +117,18 @@ SELECT * FROM Users;
 On the droplet server this will return something like this:
 ```mysql
 mysql> select * from Users;
-+---------------+------------------------+------------+----------------------+---------------+
-| username      | email                  | phone      | id_token             | dev_token     |
-+---------------+------------------------+------------+----------------------+---------------+
-| bro           | bro@email.com          | NULL       | 76545246587232       | NULL          |
-| isThisOn?     | blsssa@example.com     | NULL       | 3IYsBH6wDEyVCZfn     | NULL          |
-| pastMyBedtime | INeedSleep@example.com | NULL       | oO1A92W7Yc4r3bEa     | MyDevTokenLOL |
-| ross          | rch******@gmail.com    | 619******* | vKrnc3nfFd7YQmTC     |               |
-| sexy          | sexy@email.com         | NULL       | 23472                | NULL          |
-| something     | bla@example.com        | NULL       | 234h38fKW0dje238E    | NULL          |
-| tester        | tester@email.com       | NULL       | 4535343              | NULL          |
-| testuser      | test@email.com         | NULL       | 23598745434943758438 | NULL          |
-+---------------+------------------------+------------+----------------------+---------------+
++---------------+------------------------+------------+----------------------+---------------+-----------+
+| username      | email                  | phone      | id_token             | dev_token     | status    |
++---------------+------------------------+------------+----------------------+---------------+-----------+
+| bro           | bro@email.com          | NULL       | 76545246587232       | NULL          |           |
+| isThisOn?     | blsssa@example.com     | NULL       | 3IYsBH6wDEyVCZfn     | NULL          |           |
+| pastMyBedtime | INeedSleep@example.com | NULL       | oO1A92W7Yc4r3bEa     | MyDevTokenLOL | success   |
+| ross          | rch******@gmail.com    | 619******* | vKrnc3nfFd7YQmTC     |               |           |
+| sexy          | sexy@email.com         | NULL       | 23472                | NULL          |           |
+| something     | bla@example.com        | NULL       | 234h38fKW0dje238E    | NULL          |           |
+| tester        | tester@email.com       | NULL       | 4535343              | NULL          |           |
+| testuser      | test@email.com         | NULL       | 23598745434943758438 | NULL          |           |
++---------------+------------------------+------------+----------------------+---------------+-----------+
 
 ```
 The id_token here isn't very random/unique because these users were
@@ -145,7 +146,8 @@ SELECT username, COUNT(*) FROM Users WHERE username='<username>'
 
 I register new users into the database with the following:
 ```mysql
-INSERT INTO Users (username, email, phone, id_token, dev_token) VALUES ('<username>', '<email>', '<phone>', '<random token>', '');
+INSERT INTO Users (username, email, phone, id_token, dev_token, status) 
+VALUES ('<username>', '<email>', '<phone>', '<random token>', '', '');
 ```
 
 ---
@@ -278,16 +280,18 @@ All the POST requests above trigger POST requests on the server that should be
 sent to various places but I'm currently sending all to https://httpbin.org/post,
 so I can verify that the Server POST requests contain the correct info. Thus far, they do. :)
 
+=====
+
 ### How to run the server:
 Chris set up a systemd to make everyone's life easier, here are the instructions:
-> You can control the server as follows:
-> 1. sudo systemctl start twoefay-server
-> 2. sudo systemctl stop twoefay-server
-> 3. sudo systemctl restart twoefay-server
+You can control the server as follows:
+1. sudo systemctl start twoefay-server
+2. sudo systemctl stop twoefay-server
+3. sudo systemctl restart twoefay-server
 
-> If anything goes wrong, you can see logs with:
-> 1. sudo systemctl status twoefay-server
-> 2. sudo journalctl -xe
+If anything goes wrong, you can see logs with:
+1. sudo systemctl status twoefay-server
+2. sudo journalctl -xe
 
 -----
 -----
