@@ -1,5 +1,56 @@
 Changelog:
 
+6-2-16 8:49pm:
+	- Major update:
+		This is actually several updates into one.
+		
+		- Added /auth POST support call, per Fay's request. The Client sends the 
+			following JSON to obtain login status for a user:
+				{"token":"user's token"}
+		  and expect one of the following in return:
+				{"login":"success"} -- user authenticated successfully, so allow them in
+				{"login":"failure"} -- user failed to authenticate, don't allow them in
+				{"login":"wait"}    -- the Server still awaits user authentication
+				{"login":""}        -- no authentication has gone, deny access to user
+				
+		- Included Chris's call to APN to send notification to verified users. The function
+			that accomplishes this is called send_authentication_request(). It is triggered
+			when a User tries to log in and the Client sends a /login request to the Server.
+			Among other	things,	it sends the following JSON as data that the App can use:
+				{"username":"user's username","ip":"Client's IP", "service":"TwoEfAy"}
+			and returns the following JSON to Client:
+				{"login":"verified"}
+			which tells the Client what page to display and what to do next.
+			
+		- To implement the /auth call above, I added a couple of database functions:
+			- db_get_user_dev_token()
+			- db_get_username()
+			- db_get_user_login_status()
+			which are pretty self-explanatory.
+		  Also added a "status" column to the database to maintain the login status info
+			for users. It is set and reset when a /login and /auth request comes in from
+			the Client. Note, ideally, it will also be timed -- that is, reset 30 seconds
+			(or however many) after a user is sent the notification. This might not get done
+			in this version of the Server, but rather be future work.
+			
+	    - Added a verify_sender_IP() function that is called when the request is first
+			received. The function checks a list of IPs (currently only with Client IP) 
+			to determine whether the incoming POST request should be permitted and
+			returns "403 Forbidden" status if the request is from anyone other than the
+			Client. Note that this applies only to the Client requests, which are:
+				- register
+				- login
+				- backup
+				- auth
+			This is because the App IPs are not static and thus using this method to
+			drop requests is not feasible.
+			
+		- Some code rearrangement was done too, to keep things more organized.
+		- Removed the send_POST() function as we no longer need it, instead using the
+			send_authentication_request() function described previously.
+			
+		- I'm probably forgetting something, so I'll add it in later.
+
 5-29-16 6:09pm:
 	- Minor error handling additions. 
 		Previously the Server would happily eat up any potentially malformed JSON and 

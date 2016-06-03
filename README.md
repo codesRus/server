@@ -203,6 +203,7 @@ __U__ = User
 | /register  | C registers new U                        | username, email, phone       | responds to C's POST with JSON containing id_token   |
 | /verify    | A verifies U and device token            | id_token, dev_token          | sends POST to APN with dev_token                     |
 | /login     | C reports that U attempts to log in      | id_token                     | POSTs to APN with dev_token (or SMS OTP to U)        |
+| /auth      | C polls for U's successful/failed login  | id_token                     | responds to request with success/failure/wait/''     |
 | /backup    | C provides OTP entered by unverified U   | id_token, otp                | verify OTP the U entered at C                        |
 | /success   | A reports U authenticated successfully   | id_token                     | POSTs /login to C with JSON with id_token, success   |
 | /failure   | A reports U authenticated unsuccessfully | id_token                     | POSTS /login to C with JSON with id_token, failure   |
